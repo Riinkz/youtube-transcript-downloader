@@ -1,0 +1,150 @@
+<!-- youtube_transcript_app/frontend/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#0f172a" />
+    <title>YouTube Transcript Viewer</title>
+
+    <link
+      rel="icon"
+      href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect rx="12" ry="12" width="64" height="64" fill="%230f172a"/><polygon points="25,20 25,44 46,32" fill="%23ffffff"/></svg>'
+    />
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <main class="page">
+      <section class="card">
+        <header class="card__header">
+          <div class="brand">
+            <span class="brand__logo" aria-hidden="true">▶</span>
+            <h1 class="brand__title">YouTube Transcript Fetcher</h1>
+          </div>
+          <p class="brand__tagline">Fetch, read, copy, save.</p>
+        </header>
+
+        <form id="transcript-form" class="form" autocomplete="off">
+          <div class="form__row">
+            <label for="video-url">YouTube URL</label>
+            <input
+              type="url"
+              id="video-url"
+              name="video-url"
+              placeholder="https://www.youtube.com/watch?v=..."
+              inputmode="url"
+              required
+            />
+          </div>
+
+          <div class="form__grid">
+            <div class="form__row">
+              <label for="language-select">Language</label>
+              <select id="language-select" disabled>
+                <option value="" selected>Auto</option>
+              </select>
+            </div>
+
+            <div class="form__row form__row--checkbox">
+              <input type="checkbox" id="include-timestamps" />
+              <label for="include-timestamps">Include timestamps</label>
+            </div>
+
+            <div class="form__row form__row--action">
+              <button type="submit" id="fetch-btn" class="btn">
+                <span class="btn__label">Fetch transcript</span>
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <section id="error-message" class="alert hidden" role="alert" aria-live="assertive"></section>
+
+        <section id="transcript-section" class="result hidden" aria-live="polite">
+          <div class="result__header">
+            <h2 id="video-title" class="result__title">Transcript</h2>
+            <span id="lang-badge" class="badge" title="Language used"></span>
+          </div>
+
+          <div class="toolbar">
+            <button id="copy-btn" class="btn btn--ghost">Copy</button>
+            <button id="download-btn" class="btn">Download .txt</button>
+          </div>
+
+          <pre id="transcript-display" class="transcript"></pre>
+        </section>
+
+        <!-- Bulk download -->
+        <section class="bulk">
+          <h2 class="bulk__title">Bulk download</h2>
+          <p class="muted small">
+            Paste multiple video links (one per line), a playlist link, or a channel link.  
+            Playlist/channel requires a YouTube API key set on the server.
+          </p>
+
+          <div class="bulk__grid">
+            <div class="form__row">
+              <label for="bulk-input">Links / Playlist / Channel</label>
+              <textarea id="bulk-input" rows="5" placeholder="Paste links here…"></textarea>
+            </div>
+
+            <div class="form__row">
+              <label>Interpret as</label>
+              <div class="radio-row">
+                <label><input type="radio" name="bulk-mode" value="auto" checked /> Auto</label>
+                <label><input type="radio" name="bulk-mode" value="links" /> Links</label>
+                <label><input type="radio" name="bulk-mode" value="playlist" /> Playlist</label>
+                <label><input type="radio" name="bulk-mode" value="channel" /> Channel</label>
+              </div>
+            </div>
+
+            <div class="form__row">
+              <label for="bulk-language">Preferred language (optional)</label>
+              <input id="bulk-language" placeholder="e.g., en, de" />
+            </div>
+
+            <div class="form__row">
+              <label for="bulk-limit">Max videos</label>
+              <input id="bulk-limit" type="number" min="1" max="1000" value="200" />
+            </div>
+
+            <div class="form__row form__row--action">
+              <button id="bulk-download-btn" class="btn">
+                <span class="btn__label">Download ZIP</span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <footer class="card__footer">
+          <small class="muted">
+            Captions availability depends on the video. Auto-generated captions are supported.
+          </small>
+        </footer>
+      </section>
+    </main>
+
+    <!-- Site footer (Ko-fi) -->
+    <footer class="site-footer">
+      <a
+        class="btn btn--kofi"
+        href="https://ko-fi.com/riinkz"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Support me on Ko-fi"
+      >
+        <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M18 7h2.2a2.8 2.8 0 0 1 0 5.6H18v1.4A4 4 0 0 1 14 18H8a4 4 0 0 1-4-4V7h14Z"
+                stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+          <path d="M6 20h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <span>Support on Ko-fi</span>
+      </a>
+    </footer>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>
