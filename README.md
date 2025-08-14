@@ -86,4 +86,4 @@ python -m uvicorn backend.main:app --reload --port 8000
 ## Credits
 See [CREDITS.md](./CREDITS.md) and [NOTICE](./NOTICE).  
 - 2025 Riinkz
-- README.md written by Gemini, because I'm lazy.
+- README.md written by Claude, because I'm lazy.
