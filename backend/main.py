@@ -3,6 +3,8 @@ from __future__ import annotations
 import io
 import logging
 import os
+import time
+import random
 import zipfile
 from pathlib import Path
 from typing import List, Optional
@@ -106,18 +108,37 @@ def create_app() -> FastAPI:
         errors: List[str] = []
 
         with zipfile.ZipFile(buffer, "w", compression=zipfile.ZIP_DEFLATED) as zf:
-            for vid in video_ids:
-                try:
-                    text, used_lang = fetch_transcript(
-                        vid, language_code=language, include_timestamps=include_timestamps
-                    )
-                    title = fetch_video_title(vid) or vid
-                    base = sanitize_filename(title)
-                    unique = unique_name(base, used_names)
-                    filename = f"{unique}.txt"
-                    zf.writestr(filename, text)
-                except Exception as ex:
-                    errors.append(f"{vid}: {ex}")
+            for i, vid in enumerate(video_ids):
+                logger.info(f"Processing video {i+1}/{len(video_ids)}: {vid}")
+                
+                # Add delay between requests to avoid IP blocking
+                if i > 0: 
+                    delay = random.uniform(2.0, 5.0)  
+                    logger.info(f"Waiting {delay:.1f}s before next request...")
+                    time.sleep(delay)
+                
+                # Retry logic with exponential backoff
+                max_retries = 3
+                for attempt in range(max_retries):
+                    try:
+                        text, used_lang = fetch_transcript(
+                            vid, language_code=language, include_timestamps=include_timestamps
+                        )
+                        title = fetch_video_title(vid) or vid
+                        base = sanitize_filename(title)
+                        unique = unique_name(base, used_names)
+                        filename = f"{unique}.txt"
+                        zf.writestr(filename, text)
+                        logger.info(f"Successfully processed: {title}")
+                        break
+                    except Exception as ex:
+                        if attempt < max_retries - 1:
+                            wait_time = (2 ** attempt) + random.uniform(1, 3)
+                            logger.warning(f"Attempt {attempt + 1} failed for {vid}: {ex}. Retrying in {wait_time:.1f}s...")
+                            time.sleep(wait_time)
+                        else:
+                            logger.error(f"All attempts failed for {vid}: {ex}")
+                            errors.append(f"{vid}: {ex}")
 
             if expansion_errors:
                 errors.extend([f"[expand] {e}" for e in expansion_errors])
